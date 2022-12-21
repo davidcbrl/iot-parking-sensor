@@ -10,7 +10,7 @@
 
 #define buzzer_tone 1000
 
-#define min_distance 50
+#define min_distance 30
 #define breakpoint min_distance/3
 #define far breakpoint*3
 #define normal breakpoint*2
@@ -27,6 +27,13 @@ void setup() {
   pinMode(pin_led_3, OUTPUT);
 }
 
+void bip() {
+  tone(pin_buzzer, buzzer_tone);
+  delay(25);
+  noTone(pin_buzzer);
+}
+
+
 void loop() {
   long microsec = ultrasonic.timing();
   float distance = ultrasonic.convert(microsec, Ultrasonic::CM);
@@ -39,25 +46,29 @@ void loop() {
     if (distance <= close) {
       digitalWrite(pin_led_1, HIGH);
       delay(50);
+      bip();
+    } else {
+      digitalWrite(pin_led_1, LOW);
     }
+    
     if (distance >= close && distance <= normal) {
       digitalWrite(pin_led_2, HIGH);
-      delay(250);
+      delay(200);
+      bip();
+    } else if (distance >= close) {
+      digitalWrite(pin_led_2, LOW);
     }
+    
     if (distance >= normal && distance <= far) {
       digitalWrite(pin_led_3, HIGH);
-      delay(500);
+      delay(400);
+      bip();
     }
-
-    tone(pin_buzzer, buzzer_tone);
-    delay(50);
-    noTone(pin_buzzer);
+  
   } else {
     digitalWrite(pin_led_1, LOW);
     digitalWrite(pin_led_2, LOW);
     digitalWrite(pin_led_3, LOW);
     noTone(pin_buzzer);
   }
-
-  delay(100);
 }
